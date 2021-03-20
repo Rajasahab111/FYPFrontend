@@ -1,13 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image ,TextInput,Button,Linking} from 'react-native';
-const Signup = ()=>{
+const Signup = ({navigation})=>{
       return(
       <View style= {styles.mainView}>
-      <View>
-      <Text style={styles.heading}>
-      Estate 🏠
-      </Text>
-      </View>
+          <View>
+              <Text style={{ fontSize: 64, position: 'relative', top : -50, right : 40 }}>
+                 Sign up!
+              </Text>
+          </View>
     <View>
           <TextInput
             style={styles.inputText}
@@ -36,18 +36,17 @@ const Signup = ()=>{
             placeholderTextColor="#003f5c"/>
 
       </View>
-      <View>
+      <View style={styles.button}>
         <Button
-        title={"Sign-up"}>
-
-        </Button>
+        title={"Sign-up"} />
       </View>
       <View >
-        <Button style ={styles.cusbutton}
+        <Button
         title={"Already a user? Log-in"}
-        >
+        onPress = {()=>navigation.navigate('Login')}
+        />
 
-        </Button>
+
       </View>
       </View>
 
@@ -74,23 +73,27 @@ const styles =StyleSheet.create({
 
     },
     inputText:{
-     width:250,
-     backgroundColor:"#999999",
-     borderRadius:50,
-     height:70,
-     marginBottom:10,
-     padding:20,
+        width: 320,
+        backgroundColor: "#F7F7F7",
+        borderRadius: 5,
+        height: 60,
+        marginBottom: 10,
+        padding: 20,
    },
    mainView:
    {
-     flex: 1,
-     backgroundColor: '#483D8B',
-     alignItems: 'center',
-     justifyContent: 'center',
-},
-cusbutton : {
-  fontStyle: 'italic',
-  fontWeight: 'bold'
+       flex: 1,
+       backgroundColor: 'white',
+       alignItems: 'center',
+       justifyContent: 'center',
+
+   },
+button : {
+    borderRadius: 10,
+    height : 56,
+    width: 320,
+    backgroundColor : '#5CADC6',
+    marginTop : 40
 }
 
 }

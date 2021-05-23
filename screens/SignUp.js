@@ -1,6 +1,23 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { StyleSheet, Text, View, Image ,TextInput,Button,Linking} from 'react-native';
+import axios from "axios";
+import Login from "./LoginScreen";
 const Signup = ({navigation})=>{
+    const [username, setUsername] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [password2, setPassword2] = useState('')
+    const [data, setData] = useState('')
+    const handleSignup = async () => {
+        await axios.post('http://192.168.1.8:4000/api/users/', {
+            username: username,
+            email: email,
+            password: password,
+            password2: password2
+        }, {
+            headers: {'Content-Type': 'application/json'}
+        }).then((response) =>navigation.navigate('Login')).catch(() => alert('Username or Password is incorrect!'));
+    };
       return(
       <View style= {styles.mainView}>
           <View>
@@ -12,12 +29,16 @@ const Signup = ({navigation})=>{
           <TextInput
             style={styles.inputText}
             placeholder="Enter your username"
+            value={username}
+            onChangeText={text => setUsername(text)}
             placeholderTextColor="#003f5c"/>
      </View>
      <View>
            <TextInput
              style={styles.inputText}
              placeholder="Enter your email address"
+             value={email}
+             onChangeText={text => setEmail(text)}
              placeholderTextColor="#003f5c"/>
       </View>
       <View>
@@ -25,6 +46,8 @@ const Signup = ({navigation})=>{
              secureTextEntry
              style={styles.inputText}
              placeholder="Password"
+             value={password}
+             onChangeText={text => setPassword(text)}
              placeholderTextColor="#003f5c"/>
 
        </View>
@@ -33,11 +56,13 @@ const Signup = ({navigation})=>{
             secureTextEntry
             style={styles.inputText}
             placeholder="Re-type your password"
+            value={password2}
+            onChangeText={text => setPassword2(text)}
             placeholderTextColor="#003f5c"/>
 
       </View>
       <View style={styles.button}>
-        <Button
+        <Button onPress={() => handleSignup()}
         title={"Sign-up"} />
       </View>
       <View >

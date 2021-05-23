@@ -47,9 +47,8 @@ const About=({navigation})=>{
                 <View style={{paddingLeft: 15}}>
                     <Text style={styles.text} onPress={() => navigation.navigate('DashBoard')}>Advertisements</Text>
                     <Text style={styles.text} onPress={() => navigation.navigate('Map')}>Map</Text>
-
+                    <Text style={styles.text} onPress={() => navigation.navigate('FilteredSearch')}>Filter</Text>
                     <Text style={styles.text} onPress={() => navigation.navigate('Property')}>New Ad</Text>
-
                     <Text style={styles.text} onPress={() => navigation.navigate('Login')}>Logout</Text>
                 </View> : null
             }

@@ -1,15 +1,55 @@
-import React, {useState} from 'react';
-import {StyleSheet, StatusBar, View, Button, Text, Image, ScrollView, TouchableOpacity} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {StyleSheet,RefreshControl, StatusBar, View, FlatList, Button, Text, Image, ScrollView, TouchableOpacity} from 'react-native';
 import {Searchbar, Menu, Provider} from 'react-native-paper';
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { useIsFocused } from '@react-navigation/native';
 import {SafeAreaView} from "react-navigation";
-
-
+import axios from "axios";
+const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+}
 const DashBoard = ({navigation}) => {
     const [search, setSearch] = useState(false);
     const [menu, setMenu] = useState(false);
+    const [images, setImages] = useState([]);
+    const [searchText, setSearchText] = useState('');
+    const [filteredData, setFilteredData] = useState([]);
+    const [refreshing, setRefreshing] = React.useState(false);
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        wait(2000).then(() => setRefreshing(false));
+    }, []);
+
+
+    useEffect(() => {
+        alert(`Here`);
+        axios.get('http://192.168.1.7:4000/api/advertisements/',{headers: {'Content-Type': 'application/json', 'Authorization':`Token ${navigation.getParam('token')}`}}).then(response => setImages(response.data)).catch(() => alert('Something went wrong'));
+    },[])
+    const search_Query = (searchText) => {
+        setSearchText(searchText);
+        if (searchText !== '') {
+            const filteredData = images.filter(function (item) {
+                if (item.City !== undefined && item.Location !== undefined && item.Construction_status !== undefined && item.Beds !== undefined )
+                    return item.City.toLowerCase().includes(searchText.toLowerCase()) || item.Location.toLowerCase().includes(searchText.toLowerCase()) || item.Construction_status.toLowerCase().includes(searchText.toLowerCase()) || item.Baths === Number(searchText);
+            });
+            setFilteredData(filteredData);
+        } else setFilteredData([]);
+    };
+    const reset = () => {
+        setSearch(false);
+        setFilteredData([]);
+    };
     return (
-        <ScrollView>
+        <ScrollView
+            contentContainerStyle={styles.scrollView}
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                />
+            }
+        >
+
             <SafeAreaView>
                 {!search ?
                     <View style={styles.header}>
@@ -37,188 +77,56 @@ const DashBoard = ({navigation}) => {
                         </TouchableOpacity>
                     </View> :
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => setSearch(false)}>
+                        <TouchableOpacity onPress={reset}>
                             <FontAwesome5 name={"arrow-left"} size={25} color={"white"}/>
                         </TouchableOpacity>
                         <Searchbar
                             style={{width: '90%'}}
                             placeholder="Search Here"
+                            onChangeText={text => search_Query(text)}
                         />
                     </View>
                 }
                 {menu ?
                     <View style={{paddingLeft: 15}}>
-                        <Text style={styles.text} onPress={() => navigation.navigate('Property')}>Post Ad</Text>
+                        <Text style={styles.text} onPress={() => navigation.navigate('Property',{token: navigation.getParam('token')})}>Post Ad</Text>
                         <Text style={styles.text} onPress={() => navigation.navigate('Map')}>Map</Text>
                         <Text style={styles.text} onPress={() => navigation.navigate('')}>Cart</Text>
+                        <Text style={styles.text} onPress={() => navigation.navigate('FilteredSearch')}>Filter</Text>
                         <Text style={styles.text} onPress={() => navigation.navigate('About')}>About us</Text>
                         <Text style={styles.text} onPress={() => navigation.navigate('Login')}>Logout</Text>
                     </View> : null
                 }
-                <View style={styles.container}>
-                    <View style={{paddingTop: 5}}>
-                        <Image style={styles.pic_container} source={require('../assets/1.jpeg')}/>
-
+                <FlatList
+                    data={filteredData && filteredData.length > 0 ? filteredData : images}
+                    keyExtractor={(item, index) => index.toString()}
+                    horizontal={false}
+                    nestedScrollEnabled={true}
+                    numColumns={1}
+                    renderItem={({item}) => <View style={styles.container}>
                         <View style={{paddingTop: 5}}>
-                            <View style={{alignItems: 'center'}}>
-                                <View
-                                    style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                    <View><Text style={styles.text}>Title</Text></View>
-                                    <View><Text style={styles.text}>:</Text></View>
-                                    <View><Text style={styles.text}>House</Text></View>
+                            <Image style={styles.pic_container} source={{uri: item.Image}}/>
+                            <View style={{paddingTop: 5}}>
+                                <View style={{alignItems: 'center'}}>
+                                    <View
+                                        style={{flexDirection: "row", justifyContent: "space-between"}}>
+                                        <View><Text style={styles.text}>Title:{item.Title}</Text></View>
+                                    </View>
                                 </View>
-                            </View>
-                            <View style={{alignItems: 'center'}}>
-                                <View
-                                    style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                    <View><Text style={styles.text}>Price</Text></View>
-                                    <View><Text style={styles.text}>:</Text></View>
-                                    <View><Text style={styles.text}>2500</Text></View>
-                                </View>
-                            </View>
-                            <Button title={'View'} color={'#5CADC6'} style={{size: 50}}/>
-                        </View>
-                    </View>
-                    <View style={{paddingTop: 5}}>
-                        <Image style={styles.pic_container} source={require('../assets/1.jpeg')}/>
+                                <View style={{alignItems: 'center'}}>
+                                    <View
+                                        style={{flexDirection: "row", justifyContent: "space-between"}}>
+                                        <View><Text style={styles.text}>Price:{item.Price}</Text></View>
 
-                        <View style={{paddingTop: 5}}>
-                            <View style={{alignItems: 'center'}}>
-                                <View
-                                    style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                    <View><Text style={styles.text}>Title</Text></View>
-                                    <View><Text style={styles.text}>:</Text></View>
-                                    <View><Text style={styles.text}>House</Text></View>
+                                    </View>
                                 </View>
+                                <Button title={'View'} onPress={() => navigation.navigate('Ad', {items: item})}
+                                        color={'#5CADC6'} style={{size: 50}}/>
                             </View>
-                            <View style={{alignItems: 'center'}}>
-                                <View
-                                    style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                    <View><Text style={styles.text}>Price</Text></View>
-                                    <View><Text style={styles.text}>:</Text></View>
-                                    <View><Text style={styles.text}>2500</Text></View>
-                                </View>
-                            </View>
-                            <Button title={'View'} color={'#5CADC6'} style={{size: 50}}/>
                         </View>
-                    </View>
-                    <View style={{paddingTop: 5}}>
-                        <Image style={styles.pic_container} source={require('../assets/1.jpeg')}/>
-
-                        <View style={{paddingTop: 5}}>
-                            <View style={{alignItems: 'center'}}>
-                                <View
-                                    style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                    <View><Text style={styles.text}>Title</Text></View>
-                                    <View><Text style={styles.text}>:</Text></View>
-                                    <View><Text style={styles.text}>House</Text></View>
-                                </View>
-                            </View>
-                            <View style={{alignItems: 'center'}}>
-                                <View
-                                    style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                    <View><Text style={styles.text}>Price</Text></View>
-                                    <View><Text style={styles.text}>:</Text></View>
-                                    <View><Text style={styles.text}>2500</Text></View>
-                                </View>
-                            </View>
-                            <Button title={'View'} color={'#5CADC6'} style={{size: 50}}/>
-                        </View>
-                    </View>
-                    <View style={{paddingTop: 5}}>
-                        <Image style={styles.pic_container} source={require('../assets/1.jpeg')}/>
-
-                        <View style={{paddingTop: 5}}>
-                            <View style={{alignItems: 'center'}}>
-                                <View
-                                    style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                    <View><Text style={styles.text}>Title</Text></View>
-                                    <View><Text style={styles.text}>:</Text></View>
-                                    <View><Text style={styles.text}>House</Text></View>
-                                </View>
-                            </View>
-                            <View style={{alignItems: 'center'}}>
-                                <View
-                                    style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                    <View><Text style={styles.text}>Price</Text></View>
-                                    <View><Text style={styles.text}>:</Text></View>
-                                    <View><Text style={styles.text}>2500</Text></View>
-                                </View>
-                            </View>
-                            <Button title={'View'} color={'#5CADC6'} style={{size: 50}}/>
-                        </View>
-                    </View>
-                </View>
+                    </View>}/>
             </SafeAreaView>
         </ScrollView>
-        // <ScrollView>
-        //     {/*<StatusBar barStyle="dark-content" hidden={false} backgroundColor="blue" translucent={true}/>*/}
-        //
-        //     {/*<View style={styles.container}>*/}
-        //     {/*    <View>*/}
-        //     {/*        <NavigationBar*/}
-        //     {/*            title={title}*/}
-        //     {/*            rightButton={() => {*/}
-        //     {/*                navigation.navigate('NewProperty')*/}
-        //     {/*            }}*/}
-        //     {/*            leftButton={leftButton}*/}
-        //
-        //     {/*        />*/}
-        //     {/*    </View>*/}
-        //     {/*    <View style={styles.container}>*/}
-        //     {/*        <Image*/}
-        //     {/*            style={styles.pic_container}*/}
-        //     {/*            source={{*/}
-        //     {/*                uri: 'https://reactnative.dev/img/tiny_logo.png',*/}
-        //     {/*            }}*/}
-        //     {/*        />*/}
-        //     {/*    </View>*/}
-        //     {/*    <View>*/}
-        //     {/*        <Text style={styles.text}> Title : </Text>*/}
-        //     {/*        <Text style={styles.text}> Price : </Text>*/}
-        //     {/*        <Text style={styles.text}> Size : </Text>*/}
-        //     {/*    </View>*/}
-        //     {/*    <View style={styles.container}>*/}
-        //     {/*        <Image*/}
-        //     {/*            style={styles.pic_container}*/}
-        //     {/*            source={{*/}
-        //     {/*                uri: 'https://reactnative.dev/img/tiny_logo.png',*/}
-        //     {/*            }}*/}
-        //     {/*        />*/}
-        //     {/*    </View>*/}
-        //     {/*    <View>*/}
-        //     {/*        <Text style={styles.text}> Title : </Text>*/}
-        //     {/*        <Text style={styles.text}> Price : </Text>*/}
-        //     {/*        <Text style={styles.text}> Size : </Text>*/}
-        //     {/*    </View>*/}
-        //     {/*    <View style={styles.container}>*/}
-        //     {/*        <Image*/}
-        //     {/*            style={styles.pic_container}*/}
-        //     {/*            source={{*/}
-        //     {/*                uri: 'https://reactnative.dev/img/tiny_logo.png',*/}
-        //     {/*            }}*/}
-        //     {/*        />*/}
-        //     {/*    </View>*/}
-        //     {/*    <View>*/}
-        //     {/*        <Text style={styles.text}> Title : </Text>*/}
-        //     {/*        <Text style={styles.text}> Price : </Text>*/}
-        //     {/*        <Text style={styles.text}> Size : </Text>*/}
-        //     {/*    </View>*/}
-        //     {/*    <View style={styles.container}>*/}
-        //     {/*        <Image*/}
-        //     {/*            style={styles.pic_container}*/}
-        //     {/*            source={{*/}
-        //     {/*                uri: 'https://reactnative.dev/img/tiny_logo.png',*/}
-        //     {/*            }}*/}
-        //     {/*        />*/}
-        //     {/*    </View>*/}
-        //     {/*    <View>*/}
-        //     {/*        <Text style={styles.text}> Title : </Text>*/}
-        //     {/*        <Text style={styles.text}> Price : </Text>*/}
-        //     {/*        <Text style={styles.text}> Size : </Text>*/}
-        //     {/*    </View>*/}
-        //     {/*</View>*/}
-        // </ScrollView>
     );
 }
 const styles = StyleSheet.create({

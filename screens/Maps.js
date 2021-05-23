@@ -1,24 +1,29 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
+import Geocoder from 'react-native-geocoding';
 import {Component} from 'react';
 import MapView, {Marker} from "react-native-maps";
 import {View, StyleSheet, SafeAreaView, StatusBar, TouchableOpacity, Text, ScrollView} from "react-native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import {Searchbar} from "react-native-paper";
+Geocoder.init("xxxxxxxxxxxxxxxxxxxxxxxxx");
 
 
- const Map = ({navigation}) => {
+const Map = ({navigation}) => {
     const [latitude, setLatitude] = useState(0);
     const [longitude, setLongitude] = useState(0);
+
     const [search, setSearch] = useState(false);
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             position => {
                 setLatitude(position.coords.latitude)
+
                 setLongitude(position.coords.longitude)
             },
             {enableHighAccuracy: true, timeout: 20000, maximumAge: 2000}
         );
     }, [])
+
 
     return (
         <View style={styles.container}>
@@ -69,8 +74,16 @@ import {Searchbar} from "react-native-paper";
                             placeholder="Search Here"
                         />
                     </View>
+
                 }
             </MapView>
+            <Geocoder style={{width:'100px',borderRadius:'10px'}}
+                      mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+                      onSelected={onSelected}
+                      viewport={viewport}
+                      hideOnSelect={true}
+                      value=""
+            />
         </View>
 
     );

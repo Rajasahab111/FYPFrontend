@@ -9,6 +9,8 @@ import Map from "./Maps";
 import About from "./Aboutus";
 import Ad from "./Ad";
 import FilteredSearch from "./FilteredSearch";
+import Ecommerce from "./Ecommerce";
+import Ade from "./Ade";
 
 
 const Stack = createStackNavigator({
@@ -18,12 +20,7 @@ const Stack = createStackNavigator({
             headerShown: false,
         },
     },
-    Property: {
-        screen: Property,
-        navigationOptions: {
-            headerShown: false,
-        },
-    },
+
     Signup: {
         screen: Signup,
         navigationOptions: {
@@ -52,6 +49,14 @@ const Stack = createStackNavigator({
             }
         }
     },
+    Ecommerce: {
+        screen: Ecommerce,
+        navigationOptions: ({navigation}) => {
+            return {
+                header: null
+            }
+        }
+    },
 
 
     About: {
@@ -62,6 +67,12 @@ const Stack = createStackNavigator({
     },
     Ad: {
         screen: Ad,
+        navigationOptions: {
+            headerShown: false,
+        },
+    },
+    Ade: {
+        screen: Ade,
         navigationOptions: {
             headerShown: false,
         },

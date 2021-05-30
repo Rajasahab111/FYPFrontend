@@ -8,7 +8,7 @@ import axios from "axios";
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
 }
-const DashBoard = ({navigation}) => {
+const Ecommerce = ({navigation}) => {
     const [search, setSearch] = useState(false);
     const [menu, setMenu] = useState(false);
     const [images, setImages] = useState([]);
@@ -23,8 +23,8 @@ const DashBoard = ({navigation}) => {
 
     useEffect(() => {
         alert(`Here`);
-        axios.get('http://192.168.1.6:4000/api/advertisements/',{headers: {'Content-Type': 'application/json', 'Authorization':`Token ${navigation.getParam('token')}`}}).then(response => setImages(response.data)).catch(() => alert('Something went wrong'));
-    },[Image])
+        axios.get('http://192.168.1.6:4000/api/Products/',{headers: {'Content-Type': 'application/json', 'Authorization':`Token b1fadb08b4aac402f0efebca04b8e3b6a2d4a9d7`}}).then(response => setImages(response.data)).catch(() => alert('Something went wrong'));
+    },[])
     const search_Query = (searchText) => {
         setSearchText(searchText);
         if (searchText !== '') {
@@ -92,7 +92,6 @@ const DashBoard = ({navigation}) => {
                         <Text style={styles.text} onPress={() => navigation.navigate('Property',{token: navigation.getParam('token')})}>Post Ad</Text>
                         <Text style={styles.text} onPress={() => navigation.navigate('Map')}>Map</Text>
                         <Text style={styles.text} onPress={() => navigation.navigate('')}>Messages</Text>
-                        <Text style={styles.text} onPress={() => navigation.navigate('Ecommerce')}>E-commerce</Text>
                         <Text style={styles.text} onPress={() => navigation.navigate('FilteredSearch',{token: navigation.getParam('token')})}>Filter</Text>
                         <Text style={styles.text} onPress={() => navigation.navigate('About')}>About us</Text>
                         <Text style={styles.text} onPress={() => navigation.navigate('Login')}>Logout</Text>
@@ -106,22 +105,22 @@ const DashBoard = ({navigation}) => {
                     numColumns={1}
                     renderItem={({item}) => <View style={styles.container}>
                         <View style={{paddingTop: 5}}>
-                            <Image style={styles.pic_container} source={{uri: item.Image}}/>
+                            <Image style={styles.pic_container} source={{uri: item.image}}/>
                             <View style={{paddingTop: 5}}>
                                 <View style={{alignItems: 'center'}}>
                                     <View
                                         style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                        <View><Text style={styles.text}>Title:{item.Title}</Text></View>
+                                        <View><Text style={styles.text}>Title:{item.name}</Text></View>
                                     </View>
                                 </View>
                                 <View style={{alignItems: 'center'}}>
                                     <View
                                         style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                        <View><Text style={styles.text}>Price:{item.Price}</Text></View>
+                                        <View><Text style={styles.text}>Price:{item.price}</Text></View>
 
                                     </View>
                                 </View>
-                                <Button title={'View'} onPress={() => navigation.navigate('Ad', {items: item})}
+                                <Button title={'View'} onPress={() => navigation.navigate('Ade', {items: item})}
                                         color={'#5CADC6'} style={{size: 50}}/>
                             </View>
                         </View>
@@ -167,4 +166,4 @@ const styles = StyleSheet.create({
     }
 )
 
-export default DashBoard;
+export default Ecommerce;

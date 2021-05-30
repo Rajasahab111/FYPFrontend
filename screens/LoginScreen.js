@@ -9,7 +9,7 @@ const Login = ({navigation}) => {
     const [password, setPassword] = useState('')
     const [data, setData] = useState('')
     const handleLogin = async () => {
-        await axios.post('http://192.168.1.7:4000/auth/', {
+        await axios.post('http://192.168.1.6:4000/auth/', {
             username: username,
             password: password
         }, {

@@ -8,7 +8,7 @@ import axios from "axios";
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
 }
-const DashBoard = ({navigation}) => {
+const Myads = ({navigation}) => {
     const [search, setSearch] = useState(false);
     const [menu, setMenu] = useState(false);
     const [images, setImages] = useState([]);
@@ -23,7 +23,7 @@ const DashBoard = ({navigation}) => {
 
     useEffect(() => {
         alert(`Here`);
-        axios.get('http://192.168.1.6:4000/api/advertisements/',{headers: {'Content-Type': 'application/json', 'Authorization':`Token ${navigation.getParam('token')}`}}).then(response => setImages(response.data)).catch(() => alert('Something went wrong'));
+        axios.get('http://192.168.1.6:4000/api/dashboard/',{headers: {'Content-Type': 'application/json', 'Authorization':`Token ${navigation.getParam('token')}`}}).then(response => setImages(response.data)).catch(() => alert('Something went wrong'));
     },[Image])
     const search_Query = (searchText) => {
         setSearchText(searchText);
@@ -167,4 +167,4 @@ const styles = StyleSheet.create({
     }
 )
 
-export default DashBoard;
+export default Myads;
